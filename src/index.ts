@@ -1,6 +1,9 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import swaggerUi from 'swagger-ui-express'
+
+import { swaggerSpec } from "./config/swagger";
 
 // Load environment variables
 dotenv.config();
@@ -40,6 +43,28 @@ app.get('/health', (req, res) => {
     });
 });
 
+// API Documentation
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec,{
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Auth & AI Chat API Documentation',
+    customfavIcon: '/favicon.ico',
+    swaggerOptions: {
+        persistAuthorization: true,
+        displayRequestDuration: true,
+        docExpansion: 'none',
+        filter: true,
+        showExtensions: true,
+        showCommonExtensions: true,
+        defaultModelRendering: 'model',
+    }
+}));
+
+// Serve OpenAPI spec as JSON
+app.get("/api-docs.json", (req, res) => {
+    res.setHeader('Content-Type', 'application/json')
+    res.send(swaggerSpec)
+})
+
 // Root endpoint
 app.get('/', (req, res) => {
     res.json({
@@ -50,6 +75,28 @@ app.get('/', (req, res) => {
     });
 });
 
+/**
+ * @swagger
+ * /api/public:
+ *   get:
+ *     summary: Get public information
+ *     description: Returns public information that anyone can access
+ *     tags: [Public]
+ *     responses:
+ *       200:
+ *         description: Public information retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "This is public information"
+ */
 app.get('/api/public', (req, res) => {
     res.json({
         success: true,
@@ -57,6 +104,28 @@ app.get('/api/public', (req, res) => {
     });
 });
 
+/**
+ * @swagger
+ * /api/protected:
+ *   get:
+ *     summary: Get protected information (currently not actually protected!)
+ *     description: Claims to return admin-only information, but currently accessible to everyone
+ *     tags: [Protected]
+ *     responses:
+ *       200:
+ *         description: Protected information retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Only admin should be able to see this"
+ */
 app.get('/api/protected', (req, res) => {
     res.json({
         success: true,
