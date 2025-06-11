@@ -44,6 +44,15 @@ const SwaggerDefinition: SwaggerDefinition = {
             description: 'Production server (update with your actual URL)',
         },
     ],
+    components: {
+        securitySchemes: {
+            BearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+                description: 'Enter your admin secret (admin-secret-123)',
+            },
+        },
+    },
     tags: [
         {
             name: 'Authentication',
