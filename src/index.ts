@@ -144,12 +144,13 @@ app.get('/api/public', (req, res) => {
  *                   example: "Access denied"
  */
 app.get('/api/protected', authenticateSecret, requireAdmin, (req, res) => {
+    const user = (req as any).user;
     res.json({
         success: true,
         data: {
             message: 'only admin should be able to see this',
-            user: (req as any).user?.username,
-            role: (req as any).user?.role,
+            user: user?.username,
+            role: user?.role,
             secretData: 'this is confidential admin information'
         },
         message: 'Only admin should be able to see this',
