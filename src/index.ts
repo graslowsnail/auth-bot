@@ -50,6 +50,20 @@ app.get('/', (req, res) => {
     });
 });
 
+app.get('/api/public', (req, res) => {
+    res.json({
+        success: true,
+        message: 'This is public information',
+    });
+});
+
+app.get('/api/protected', (req, res) => {
+    res.json({
+        success: true,
+        message: 'Only admin should be able to see this',
+    });
+});
+
 //API Routes
 //app.use('/api', authRoutes)
 
