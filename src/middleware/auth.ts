@@ -49,7 +49,7 @@ export const requireAdmin = (req, res, next) => {
         return;
     }
     
-    console.log(`👑 [AUTH] Admin access granted to: ${(req as any).user.username}`);
+    console.log(`👑 [AUTH] Admin access granted to: ${req.user.username}`);
     next();
 };
 
@@ -62,6 +62,6 @@ export const requireAuth = (req, res, next) => {
         })
     }
 
-    console.log(`🔓 [AUTH] Authenticated access granted to: ${(req as any).user.username} (${(req as any).user.role})`);
+    console.log(`🔓 [AUTH] Authenticated access granted to: ${req.user.username} (${req.user.role})`);
     next();
 }
