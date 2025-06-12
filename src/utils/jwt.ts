@@ -47,3 +47,38 @@ export const verifyJWT = (token: string) => {
         
     }
 }
+/**
+ * Extract JWT token from Authorization header
+ * Supports format: "Bearer <token>"
+ */
+export const extractTokenFromHeader = (authHeader: string | undefined):string | null => {
+    if(!authHeader) {
+        return null;
+    }
+
+    const parts = authHeader.split(' ');
+    if(parts.length === 2 && parts[0] === 'Bearer') {
+        return parts[1]
+    }
+
+    return null;
+} 
+
+/**
+ * Get token from request (either header or cookie)
+ */
+export const getTokenFromRequest = (req: any ): string | null => {
+    // Try Authorization header first
+    const headerToken = extractTokenFromHeader(req.headers.authorization)
+    if (headerToken) {
+        return headerToken;
+    }
+
+    // Try cookie as fallback
+    const cookieToken = req.cookies?.token;
+    if(cookieToken){
+        return cookieToken
+    }
+
+    return null;
+}

@@ -7,6 +7,7 @@ export interface User {
     password: string;
     role: 'admin' | 'basic';
     secret: string;
+    createdAt: Date;
 }
 
 export interface AuthenticatedRequest extends Request {

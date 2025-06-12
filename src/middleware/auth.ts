@@ -1,4 +1,5 @@
-import { findUserBySecret } from "../config/database";
+import { findUserById, findUserBySecret } from "../config/database";
+import { getTokenFromRequest, verifyJWT } from "../utils/jwt";
 
 export const authenticateSecret = (req, res, next) => {
     console.log('🔐 [AUTH] Using secret-based authentication (educational demo)');
@@ -64,4 +65,44 @@ export const requireAuth = (req, res, next) => {
 
     console.log(`🔓 [AUTH] Authenticated access granted to: ${req.user.username} (${req.user.role})`);
     next();
+}
+
+export const authenticateToken = (req, res, next) => {
+    console.log('🔐 [AUTH] Using JWT-based authentication');
+
+    // Get token from request (header or cookie)
+    const token = getTokenFromRequest(req)
+
+    if(!token) {
+        return res.status(401).json({
+            success: false,
+            error: 'Access denied. No token provieded',
+            message: 'Provide JWT token in Authorization header (Bearer <toke> or cookie'
+        })
+    }
+
+    // Verify JTW token
+    const decoded = verifyJWT(token)
+    if(!decoded){
+        return res.status(401).json({
+            success: false,
+            error: 'invalid or expired token',
+            message: 'User associated with token no longer exists'
+        })
+    }
+
+    // Get fresh user data from database
+    const user = findUserById(decoded.userId) 
+    if(!user) {
+        return res.status(401).json({
+            success: false,
+            error: 'User not found',
+            message: 'User associated with token no longer exists'
+        })
+    }
+
+    // Attach fresh user data to request
+    req.user = user;
+    console.log(`✅ [AUTH] User authenticated: ${user.username} (${user.role}) via JWT`);
+    next()
 }
