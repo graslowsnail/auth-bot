@@ -4,8 +4,7 @@ import dotenv from "dotenv";
 import swaggerUi from 'swagger-ui-express'
 
 import { swaggerSpec } from "./config/swagger";
-import { authenticateSecret, requireAdmin } from "./middleware/auth"; 
-import { ApiResponse } from "./types";
+import authRoutes from './routes/auth'
 
 // Load environment variables
 dotenv.config();
@@ -77,88 +76,10 @@ app.get('/', (req, res) => {
     });
 });
 
-/**
- * @swagger
- * /api/public:
- *   get:
- *     summary: Get public information
- *     description: Returns public information that anyone can access
- *     tags: [Public]
- *     responses:
- *       200:
- *         description: Public information retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "This is public information"
- */
-app.get('/api/public', (req, res) => {
-    res.json({
-        success: true,
-        message: 'This is public information',
-    });
-});
 
-/**
- * @swagger
- * /api/protected:
- *   get:
- *     summary: Get protected information (NOW ACTUALLY PROTECTED!)
- *     description: Returns admin-only information. Requires admin secret in Authorization header.
- *     tags: [Protected]
- *     security:
- *       - BearerAuth: []
- *     responses:
- *       200:
- *         description: Protected information retrieved successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Only admin should be able to see this"
- *       401:
- *         description: Unauthorized - No secret provided or invalid secret
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: false
- *                 error:
- *                   type: string
- *                   example: "Access denied"
- */
-app.get('/api/protected', authenticateSecret, requireAdmin, (req, res) => {
-    const user = (req as any).user;
-    res.json({
-        success: true,
-        data: {
-            message: 'only admin should be able to see this',
-            user: user?.username,
-            role: user?.role,
-            secretData: 'this is confidential admin information'
-        },
-        message: 'Only admin should be able to see this',
-    });
-});
 
 //API Routes
-//app.use('/api', authRoutes)
+app.use('/api', authRoutes)
 
 // Start server
 app.listen(PORT, () => {

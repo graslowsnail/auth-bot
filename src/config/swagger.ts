@@ -80,6 +80,7 @@ const SwaggerDefinition: SwaggerDefinition = {
 const swaggerOptions = {
     definition: SwaggerDefinition,
     apis: [
+        './src/routes/*.ts',  // Instead of './src/index.ts'
         './src/index.ts',
     ]
 }
